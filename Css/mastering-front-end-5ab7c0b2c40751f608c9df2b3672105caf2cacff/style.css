@@ -1,0 +1,38 @@
+body {
+  min-height: 100vh;
+  background: rgb(237, 238, 235);
+}
+.container{
+  width: 600px;
+  display: grid;
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:repeat(3,1fr);
+  grid-template-areas: "head head sect"
+                       "art  photo sect"
+                       "art  foot  foot";
+}
+div{
+  height: 100px;
+}
+div:nth-child(1) {
+  background: yellow;
+  grid-area:head;
+}
+div:nth-child(2) {
+  background: purple;
+  grid-area:sect;
+  height: auto;
+}
+div:nth-child(3) {
+  background: green;
+  grid-area: photo;
+}
+div:nth-child(4) {
+  background: red;
+  grid-area: art;
+  height: auto;
+}
+div:nth-child(5) {
+  background: orchid;
+  grid-area: foot;
+}
