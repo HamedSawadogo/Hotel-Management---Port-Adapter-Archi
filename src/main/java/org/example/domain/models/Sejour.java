@@ -11,23 +11,23 @@ public class Sejour {
     private Reservation reservation;
     private Client client;
     private Hebergement hebergement;
-    private List<ServiceHebergemet> serviceHebergemets;
-    private BigDecimal motant;
+    private List<ServiceHebergement> serviceHebergements;
+    private BigDecimal montant;
 
     public Sejour(Reservation reservation) {
         this.reservation = reservation;
         this.client = reservation.getClient();
         this.hebergement = reservation.getHebergement();
-        this.serviceHebergemets = new ArrayList<>();
+        this.serviceHebergements = new ArrayList<>();
+        this.montant = BigDecimal.ZERO;
     }
 
-    public void addService(ServiceHebergemet serviceHebergemet) {
-        this.serviceHebergemets.add(serviceHebergemet);
-        this.motant = this.motant.add(serviceHebergemet.getPrix());
+    public void addService(ServiceHebergement service) {
+        this.serviceHebergements.add(service);
+        this.montant = this.montant.add(service.getPrix());
     }
 
-    public void addServices(List<ServiceHebergemet> serviceHebergemets) {
-        this.serviceHebergemets.addAll(serviceHebergemets);
-        this.motant = this.motant.add(serviceHebergemets.stream().map(ServiceHebergemet::getPrix).reduce(BigDecimal.ZERO, BigDecimal::add));
+    public void addServices(List<ServiceHebergement> services) {
+        services.forEach(this::addService);
     }
 }

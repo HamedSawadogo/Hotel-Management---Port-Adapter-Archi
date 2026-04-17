@@ -1,7 +1,7 @@
-package org.example.domain.ports;
+package org.example.application.ports;
 
 import org.example.domain.models.Hebergement;
 
 public interface HebergementPort {
-    Hebergement getOneById(Long herbergementId);
+    Hebergement findById(Long hebergementId);
 }

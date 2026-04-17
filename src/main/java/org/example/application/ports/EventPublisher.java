@@ -1,4 +1,4 @@
-package org.example.domain.ports;
+package org.example.application.ports;
 
 import org.example.domain.models.DomainEvent;
 
