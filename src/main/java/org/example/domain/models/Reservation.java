@@ -42,6 +42,7 @@ public class Reservation {
             throw new BusinessException("Impossible de modifier une reservation annulée ou terminée");
         }
 
+
         if (this.dateReservation.isAfter(reservation.dateReservation)) {
             throw new BusinessException("la date de reservation est invalide");
         }
