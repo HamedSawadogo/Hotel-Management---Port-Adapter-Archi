@@ -1,6 +1,6 @@
 package org.example.infrastructure;
 
-import org.example.application.ports.EventPublisher;
+import org.example.domain.gateways.EventPublisher;
 import org.example.domain.models.DomainEvent;
 
 

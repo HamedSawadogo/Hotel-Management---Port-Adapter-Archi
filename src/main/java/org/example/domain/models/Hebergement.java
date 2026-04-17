@@ -10,6 +10,13 @@ public class Hebergement {
     private BigDecimal prixParNuit;
     private StatusHebergement statusHebergement;
 
+
+    public Hebergement(String typeHebergement, BigDecimal prixParNuit) {
+        this.typeHebergement = typeHebergement;
+        this.prixParNuit = prixParNuit;
+        this.statusHebergement = StatusHebergement.INDISPONIBLE;
+    }
+
     public void liberer() {
         if (statusHebergement != StatusHebergement.INDISPONIBLE) {
             throw new BusinessException("L'hébergement n'est pas occupé");

@@ -1,6 +1,10 @@
 package org.example.domain.models;
 
 import lombok.Getter;
+import org.example.domain.PromotionStrategy;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -17,6 +21,7 @@ public class Reservation {
     private long nbJours;
     private int nombreEnfants;
     private final Client client;
+    private BigDecimal montantLogement;
 
     public Reservation(LocalDateTime dateReservation,
                        LocalDate dateArrivee,
@@ -32,6 +37,7 @@ public class Reservation {
         this.nbPersonnes = nbPersonnes;
         this.nbJours = ChronoUnit.DAYS.between(dateArrivee, dateDepart);
         this.nombreEnfants = nombreEnfants;
+        this.montantLogement = calculerCoutLogement();
         this.client = client;
         this.status = StatusReservation.EN_ATTENTE;
     }
@@ -79,4 +85,19 @@ public class Reservation {
         }
         this.status = StatusReservation.ANULLEE;
     }
+
+    public BigDecimal calculerCoutLogement() {
+        this.montantLogement =  hebergement.getPrixParNuit().multiply(BigDecimal.valueOf(nbJours));
+        return montantLogement;
+    }
+
+    public void aplyPromotion( PromotionStrategy promotionStrategy) {
+        this.montantLogement = promotionStrategy.apply(montantLogement);
+    }
+
+
+    public BigDecimal getMontantLogement() {
+        return montantLogement.setScale(2, RoundingMode.HALF_UP);
+    }
+
 }

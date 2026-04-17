@@ -2,10 +2,10 @@ package org.example.application.usecases;
 
 import lombok.RequiredArgsConstructor;
 import org.example.application.dtos.PaymentRequest;
-import org.example.application.ports.EventPublisher;
-import org.example.application.ports.PaymentServicePort;
-import org.example.application.ports.ReservationPort;
-import org.example.application.ports.SejourPort;
+import org.example.domain.gateways.EventPublisher;
+import org.example.domain.repositories.PaymentServicePort;
+import org.example.domain.repositories.ReservationPort;
+import org.example.domain.repositories.SejourPort;
 import org.example.domain.models.BusinessException;
 import org.example.domain.models.Reservation;
 import org.example.domain.models.ReservationConfirmee;
@@ -13,7 +13,6 @@ import org.example.domain.services.PricingService;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

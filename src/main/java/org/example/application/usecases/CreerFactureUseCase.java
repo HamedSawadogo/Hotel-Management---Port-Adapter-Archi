@@ -2,7 +2,7 @@ package org.example.application.usecases;
 
 import org.example.domain.models.FactureClient;
 import org.example.domain.models.Reservation;
-import org.example.application.ports.FacturePort;
+import org.example.domain.repositories.FacturePort;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
