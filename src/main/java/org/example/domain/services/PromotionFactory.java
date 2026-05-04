@@ -1,4 +1,4 @@
-package org.example.domain;
+package org.example.domain.services;
 
 public class PromotionFactory {
     public static PromotionStrategy resolve(int userReservationCount, boolean esFidel) {

@@ -1,4 +1,4 @@
-package org.example.domain.repositories;
+package org.example.domain.ports.out.repositories;
 
 import org.example.application.dtos.PaymentRequest;
 

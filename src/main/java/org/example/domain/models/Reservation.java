@@ -1,61 +1,76 @@
 package org.example.domain.models;
 
 import lombok.Getter;
-import org.example.domain.PromotionStrategy;
-
+import org.example.domain.services.PromotionStrategy;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import java.util.UUID;
+
 
 @Getter
-public class Reservation {
-    private Long id;
+public class Reservation extends AggregateRoot<UUID> {
     private LocalDateTime dateReservation;
     private LocalDate dateArrivee;
     private LocalDate dateDepart;
     private Hebergement hebergement;
     private StatusReservation status;
     private int nbPersonnes;
-    private long nbJours;
     private int nombreEnfants;
-    private final Client client;
+    private UUID clientId;
     private BigDecimal montantLogement;
 
-    public Reservation(LocalDateTime dateReservation,
-                       LocalDate dateArrivee,
-                       LocalDate dateDepart,
-                       Hebergement hebergement,
-                       int nbPersonnes,
-                       int nombreEnfants,
-                       Client client) {
-        this.dateReservation = dateReservation;
-        this.dateArrivee = dateArrivee;
-        this.dateDepart = dateDepart;
-        this.hebergement = hebergement;
-        this.nbPersonnes = nbPersonnes;
-        this.nbJours = ChronoUnit.DAYS.between(dateArrivee, dateDepart);
-        this.nombreEnfants = nombreEnfants;
-        this.montantLogement = calculerCoutLogement();
-        this.client = client;
-        this.status = StatusReservation.EN_ATTENTE;
+
+    public static Reservation create(UUID clientId, Hebergement hebergement, LocalDateTime dateReservation, LocalDate dateArrivee, LocalDate dateDepart, int nbPersonnes, int nbEnfants) {
+
+        validateInputs(clientId, hebergement, dateReservation, dateArrivee, dateDepart, nbPersonnes, nbEnfants);
+
+        Reservation reservation = new Reservation();
+
+        reservation.id = UUID.randomUUID();
+        reservation.clientId = clientId;
+        reservation.hebergement = hebergement;
+        reservation.dateReservation = dateReservation;
+        reservation.dateArrivee = dateArrivee;
+        reservation.dateDepart = dateDepart;
+        reservation.nbPersonnes = nbPersonnes;
+        reservation.nombreEnfants = nbEnfants;
+        reservation.status = StatusReservation.EN_ATTENTE;
+
+        reservation.validateBusinessRules();
+
+        return reservation;
     }
 
-    public void update(Reservation reservation) {
-        if (reservation.getStatus().equals(StatusReservation.ANULLEE)  ||
-        reservation.getStatus().equals(StatusReservation.TERMINE)) {
-            throw new BusinessException("Impossible de modifier une reservation annulée ou terminée");
-        }
+
+    private static void validateInputs(UUID clientId, Hebergement hebergement, LocalDateTime dateReservation, LocalDate dateArrivee, LocalDate dateDepart, int nbPersonnes, int nbEnfants) {
+        if (clientId == null) throw new BusinessException("Client obligatoire");
+        if (hebergement == null) throw new BusinessException("Hébergement obligatoire");
+        if (dateReservation == null) throw new BusinessException("Date réservation obligatoire");
+        if (dateArrivee == null || dateDepart == null) throw new BusinessException("Dates obligatoires");
+        if (dateArrivee.isAfter(dateDepart)) throw new BusinessException("Date arrivée doit être avant date départ");
+        if (nbPersonnes <= 0 || nbEnfants < 0) throw new BusinessException("Occupants invalides");
+    }
 
 
-        if (this.dateReservation.isAfter(reservation.dateReservation)) {
-            throw new BusinessException("la date de reservation est invalide");
+    private void validateBusinessRules() {
+        validateOccupants();
+        validateReservationDates();
+    }
+
+
+    private void validateOccupants() {
+        if (nbPersonnes <= 0 || nombreEnfants < 0) {
+            throw new BusinessException("Occupants invalides");
         }
-        this.status = reservation.status;
-        this.dateReservation = reservation.dateReservation;
-        this.nbJours = reservation.nbJours;
-        this.nombreEnfants = reservation.nombreEnfants;
+    }
+
+    private void validateReservationDates() {
+        if (dateArrivee.isAfter(dateDepart)) {
+            throw new BusinessException("La date d'arrivée doit etre avant la date de départ");
+        }
     }
 
     public void terminer() {
@@ -66,15 +81,12 @@ public class Reservation {
     }
 
     public void confirmer() {
-        if (this.status == StatusReservation.ANULLEE || this.status == StatusReservation.TERMINE) {
-            throw new BusinessException("Impossible de confirmer une réservation " + this.status.name().toLowerCase());
-        }
-        if (this.status == StatusReservation.CONFIRME) {
-            return;
+        if (status != StatusReservation.EN_ATTENTE) {
+            throw new BusinessException("Impossible de confirmer cette reservation  " + this.status.name().toLowerCase());
         }
         this.status = StatusReservation.CONFIRME;
-        this.hebergement.occuper();
     }
+
 
     public void annuler() {
         if (this.status == StatusReservation.CONFIRME) {
@@ -86,18 +98,26 @@ public class Reservation {
         this.status = StatusReservation.ANULLEE;
     }
 
+    public long getNbJours() {
+        return Duration.between(dateArrivee, dateDepart).toDays();
+    }
+
     public BigDecimal calculerCoutLogement() {
-        this.montantLogement =  hebergement.getPrixParNuit().multiply(BigDecimal.valueOf(nbJours));
+        this.montantLogement = hebergement.getPrixParNuit().multiply(BigDecimal.valueOf(getNbJours()));
         return montantLogement;
     }
 
-    public void aplyPromotion( PromotionStrategy promotionStrategy) {
+    public void applyPromotion(PromotionStrategy promotionStrategy) {
         this.montantLogement = promotionStrategy.apply(montantLogement);
     }
 
 
     public BigDecimal getMontantLogement() {
         return montantLogement.setScale(2, RoundingMode.HALF_UP);
+    }
+
+    public boolean estConfirmee() {
+        return status == StatusReservation.CONFIRME;
     }
 
 }
