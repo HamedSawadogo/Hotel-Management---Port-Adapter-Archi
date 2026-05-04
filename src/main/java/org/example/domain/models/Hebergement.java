@@ -10,16 +10,24 @@ public class Hebergement {
     private BigDecimal prixParNuit;
     private StatusHebergement statusHebergement;
 
+
+    public Hebergement(String typeHebergement, BigDecimal prixParNuit) {
+        this.typeHebergement = typeHebergement;
+        this.prixParNuit = prixParNuit;
+        this.statusHebergement = StatusHebergement.INDISPONIBLE;
+    }
+
     public void liberer() {
-        if (statusHebergement != StatusHebergement.INDISPONIBLE) {
+        if (statusHebergement == StatusHebergement.INDISPONIBLE) {
+            this.statusHebergement = StatusHebergement.DISPONIBLE;
+        } else {
             throw new BusinessException("L'hébergement n'est pas occupé");
         }
-        this.statusHebergement = StatusHebergement.DISPONIBLE;
     }
 
     public void occuper() {
         if (statusHebergement != StatusHebergement.DISPONIBLE) {
-            throw new BusinessException("L'hébergement n'est pas disponible");
+            throw new BusinessException("L'hébergement n'est plus disponible");
         }
         this.statusHebergement = StatusHebergement.INDISPONIBLE;
     }

@@ -1,4 +1,4 @@
-package org.example.application.ports;
+package org.example.domain.ports.out.repositories;
 
 import org.example.domain.models.FactureClient;
 

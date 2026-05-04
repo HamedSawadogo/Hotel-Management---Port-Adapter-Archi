@@ -1,18 +1,17 @@
 package org.example.domain.models;
 
 import lombok.Getter;
+import org.example.domain.events.BaseEvent;
+
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Getter
-public class ReservationConfirmee extends DomainEvent {
-    private final Long reservationId;
-    private final Long clientId;
-    private final BigDecimal montantTotal;
+public class ReservationConfirmee extends BaseEvent<Reservation> {
+    private final Reservation reservation;
 
-    public ReservationConfirmee(Long reservationId, Long clientId, BigDecimal montantTotal) {
-        super();
-        this.reservationId = reservationId;
-        this.clientId = clientId;
-        this.montantTotal = montantTotal;
+    public ReservationConfirmee(Reservation reservation) {
+        super(reservation, LocalDateTime.now());
+        this.reservation = reservation;
     }
 }
