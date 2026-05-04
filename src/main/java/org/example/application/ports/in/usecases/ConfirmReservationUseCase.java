@@ -1,4 +1,4 @@
-package org.example.application.ports.in;
+package org.example.application.ports.in.usecases;
 
 import org.example.application.dtos.PaymentRequest;
 
